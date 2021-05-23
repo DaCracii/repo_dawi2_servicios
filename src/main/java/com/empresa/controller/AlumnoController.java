@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +44,9 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 	}
 
 	@PutMapping
-	public ResponseEntity<Alumno> actualiza(@RequestBody Alumno obj) { // indica que Alumno va a venir en formato Json
+	public ResponseEntity<Alumno> actualiza(@RequestBody Alumno obj) {
 		System.out.println(">>>> Actualiza!! ");
+		
 		Optional<Alumno> optAlumno = service.obtienePorId(obj.getIdAlumno());
 		if (optAlumno.isPresent()) {
 			Alumno objSalida = service.insertaActualizaAlumno(obj);
@@ -53,7 +56,22 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 				return ResponseEntity.badRequest().build();
 			}
 		} else {
-			System.out.println("No existe el ID del ALumno");
+			System.out.println("No existe el ID del ALumno para actualizar");
+			return ResponseEntity.badRequest().build();
+		}
+
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Alumno> elimina(@PathVariable("id") int idAlumno) { // indica que Alumno va a venir en formato Json
+		System.out.println(">>>> Elimina --> " + idAlumno);
+		
+		Optional<Alumno> optAlumno = service.obtienePorId(idAlumno);
+		if (optAlumno.isPresent()) {
+			service.eliminaAlumno(idAlumno);
+			return ResponseEntity.ok(optAlumno.get());
+		} else {
+			System.out.println("No existe el ID del ALumno para eliminar");
 			return ResponseEntity.badRequest().build();
 		}
 
