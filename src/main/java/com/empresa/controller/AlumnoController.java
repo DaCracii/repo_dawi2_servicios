@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 	@Autowired
 	private AlumnoService service;
 
-	@GetMapping
+	@GetMapping //LISTAR ALUMNO
 	public ResponseEntity<List<Alumno>> listaAlumno() {
 		System.out.println(">>>> lista ");
 		List<Alumno> lstAlumno = service.listaAlumno();
@@ -32,7 +33,7 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 		return ResponseEntity.ok(lstAlumno); // para convertir nuestro Arraylist en Json
 	}
 
-	@PostMapping
+	@PostMapping //INSERTAR ALUMNO
 	public ResponseEntity<Alumno> registra(@RequestBody Alumno obj) { // indica que Alumno va a venir en formato Json
 		System.out.println(">>>> Registro!! ");
 		Alumno objSalida = service.insertaActualizaAlumno(obj);
@@ -43,10 +44,10 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 		}
 	}
 
-	@PutMapping
+	@PutMapping //EDITAR ALUMNO
 	public ResponseEntity<Alumno> actualiza(@RequestBody Alumno obj) {
 		System.out.println(">>>> Actualiza!! ");
-		
+
 		Optional<Alumno> optAlumno = service.obtienePorId(obj.getIdAlumno());
 		if (optAlumno.isPresent()) {
 			Alumno objSalida = service.insertaActualizaAlumno(obj);
@@ -61,11 +62,12 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 		}
 
 	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Alumno> elimina(@PathVariable("id") int idAlumno) { // indica que Alumno va a venir en formato Json
+
+	@DeleteMapping("/{id}") //ELIMINAR ALUMNO
+	public ResponseEntity<Alumno> elimina(@PathVariable("id") int idAlumno) { // indica que Alumno va a venir en formato
+																				// Json
 		System.out.println(">>>> Elimina --> " + idAlumno);
-		
+
 		Optional<Alumno> optAlumno = service.obtienePorId(idAlumno);
 		if (optAlumno.isPresent()) {
 			service.eliminaAlumno(idAlumno);
@@ -75,6 +77,20 @@ public class AlumnoController { // RestController para consumir servicios, ya no
 			return ResponseEntity.badRequest().build();
 		}
 
+	}
+
+	@GetMapping("/{dni}") //LISTAR POR DNI
+	public ResponseEntity<List<Alumno>> buscarAlumno(@PathVariable("dni") String dniAlumno) {
+		System.out.println(">>>> lista ");
+		List<Alumno> lstAlumno = service.listaPorDni(dniAlumno);
+		if (!CollectionUtils.isEmpty(lstAlumno)) {
+			service.listaPorDni(dniAlumno);
+			return ResponseEntity.ok(lstAlumno);
+		} else {
+			System.out.println(">>>> buscar por dni - no existen alumnos con ese dni : " + dniAlumno);
+			return ResponseEntity.badRequest().build();
+
+		}
 	}
 
 }
